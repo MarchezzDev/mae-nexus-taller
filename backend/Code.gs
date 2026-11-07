@@ -9,7 +9,7 @@ var HOJA = 'MAE Nexus · Taller (respuestas)';
 function setup() { sheet(); root(); Logger.log('Listo: hoja y carpeta creadas en tu Drive.'); }
 
 function doGet(e) {
-  var c = String((e && e.parameter && e.parameter.c) || '').toUpperCase().trim();
+  var c = String((e && e.parameter && (e.parameter.code || e.parameter.c)) || '').toUpperCase().trim();
   if (!c) return out({ ok: false, error: 'sin código' });
   var r = find(c);
   if (!r) return out({ ok: false, error: 'no existe' });
