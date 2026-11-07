@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MAE Nexus · Taller de la web</title>
+<meta name="description" content="Elegid cómo será vuestra web: estilo, colores, letras, textos, logo y fotos, viendo el resultado al momento.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Playfair+Display:wght@500;600&family=DM+Serif+Display&family=Libre+Baskerville:wght@400;700&family=Sora:wght@400;600;700&family=Lora:wght@500;600&family=Josefin+Sans:wght@400;600&family=Montserrat:wght@500;700&family=Rubik:wght@400;500&family=Source+Sans+3:wght@400;600&family=DM+Sans:wght@400;500&family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ui:#15140f;--ui2:#6b6760;--line:#e4e1da;--bg:#f6f5f1;--card:#fff;--ok:#1d6b45}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:Manrope,system-ui,sans-serif;color:var(--ui);background:var(--bg);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+img{display:block;max-width:100%}
+a{color:inherit}
+.sr{position:absolute;left:-9999px}
+
+/* ---------- app shell ---------- */
+#app{display:grid;grid-template-columns:440px 1fr;height:100dvh;overflow:hidden}
+#panel{display:flex;flex-direction:column;min-height:0;min-width:0;border-right:1px solid var(--line);background:var(--card)}
+#stage{position:relative;min-width:0;background:#e9e7e1;display:flex;flex-direction:column}
+header.top{display:flex;align-items:center;gap:14px;padding:16px 20px 12px;border-bottom:1px solid var(--line)}
+header.top .brand{font-weight:800;letter-spacing:-.01em}
+header.top .brand small{display:block;font-weight:500;color:var(--ui2);font-size:12px;letter-spacing:0}
+header.top .right{margin-left:auto;display:flex;gap:8px}
+.btn{border:1px solid var(--ui);padding:10px 14px;font-weight:600;font-size:14px;background:#fff;transition:transform .08s}
+.btn:active{transform:translateY(1px)}
+.btn.dark{background:var(--ui);color:#fff}
+.btn.sm{padding:7px 10px;font-size:13px}
+.btn[disabled]{opacity:.5;cursor:default}
+#steps{display:flex;gap:4px;padding:12px 20px 0;overflow-x:auto;scrollbar-width:none}
+#steps::-webkit-scrollbar{display:none}
+#steps button{flex:0 0 auto;padding:8px 10px;font-size:13px;font-weight:600;color:var(--ui2);border-bottom:2px solid transparent}
+#steps button.on{color:var(--ui);border-color:var(--ui)}
+#steps button.done::before{content:"✓ ";color:var(--ok)}
+#bar{height:3px;background:var(--line);margin:10px 20px 0}
+#bar i{display:block;height:100%;background:var(--ui);width:0;transition:width .3s}
+#form{flex:1;overflow:auto;padding:18px 20px 40px;scroll-behavior:smooth}
+.step{display:none}.step.on{display:block}
+.step h2{font-size:22px;letter-spacing:-.02em;margin-bottom:6px}
+.step .lead{color:var(--ui2);font-size:14px;line-height:1.5;margin-bottom:20px}
+.f{margin-bottom:18px}
+.f label,.f .lab{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+.f .hint{font-size:12.5px;color:var(--ui2);margin:-2px 0 8px;line-height:1.45}
+.in{width:100%;border:1px solid var(--line);background:#fff;padding:11px 12px;font-size:15px;border-radius:0}
+.in:focus{outline:2px solid var(--ui);outline-offset:-1px}
+textarea.in{min-height:84px;resize:vertical;line-height:1.45}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);padding:8px 11px;font-size:13px;background:#fff;text-align:left;line-height:1.3}
+.chip.on{border-color:var(--ui);background:var(--ui);color:#fff}
+.checks label{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-weight:500;font-size:14.5px;cursor:pointer}
+.checks input{width:18px;height:18px;margin-top:1px;accent-color:var(--ui)}
+.nav{display:flex;gap:10px;padding:12px 20px;background:#fff;border-top:1px solid var(--line)}
+.nav .btn{flex:1;text-align:center}
+
+/* themes cards */
+.temas{display:grid;gap:10px}
+.tema{display:grid;grid-template-columns:96px 1fr;gap:12px;border:1px solid var(--line);padding:10px;text-align:left;background:#fff;align-items:center}
+.tema.on{outline:2px solid var(--ui);outline-offset:-1px}
+.tema .sw{height:64px;display:grid;grid-template-rows:1fr 1fr}
+.tema .sw i{display:block}
+.tema b{display:block;font-size:15px}
+.tema span{font-size:13px;color:var(--ui2);line-height:1.4}
+/* colours */
+.col{display:grid;grid-template-columns:44px 1fr 110px;gap:10px;align-items:center;margin-bottom:10px}
+.col input[type=color]{width:44px;height:40px;border:1px solid var(--line);padding:2px;background:#fff;cursor:pointer}
+.col .name{font-weight:600;font-size:14px}
+.col .name small{display:block;font-weight:500;color:var(--ui2);font-size:12px}
+.col .hex{text-transform:uppercase;font-family:ui-monospace,Consolas,monospace;font-size:14px}
+.sl{display:grid;grid-template-columns:70px 1fr 70px;align-items:center;gap:10px;font-size:13px;color:var(--ui2);margin:8px 0}
+.sl input{width:100%;accent-color:var(--ui)}
+.sl span:last-child{text-align:right}
+.pals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pal{border:1px solid var(--line);padding:6px;background:#fff;text-align:left}
+.pal.on{outline:2px solid var(--ui);outline-offset:-1px}
+.pal .s{display:flex;height:26px}.pal .s i{flex:1}
+.pal small{display:block;font-size:11.5px;margin-top:5px;color:var(--ui2);line-height:1.2}
+/* fonts */
+.fonts{display:grid;gap:8px}
+.fnt{border:1px solid var(--line);padding:10px 12px;background:#fff;text-align:left;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.fnt.on{outline:2px solid var(--ui);outline-offset:-1px}
+.fnt b{font-size:22px;font-weight:600;line-height:1.1}
+.fnt small{font-size:11.5px;color:var(--ui2);white-space:nowrap}
+/* photos */
+.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.th{position:relative;aspect-ratio:4/3;overflow:hidden;border:1px solid var(--line);background:#eee;padding:0}
+.th img{width:100%;height:100%;object-fit:cover}
+.th.on{outline:3px solid var(--ui);outline-offset:-3px}
+.th.add{display:grid;place-items:center;font-size:13px;font-weight:600;color:var(--ui2);background:#fff;cursor:pointer}
+.th .x{position:absolute;top:4px;right:4px;background:#fff;border:1px solid var(--line);width:24px;height:24px;font-size:14px;line-height:1}
+.logo-box{display:flex;align-items:center;gap:12px;border:1px dashed #c9c5bc;padding:12px;background:#fff}
+.logo-box img{max-height:56px;max-width:160px}
+.logo-box .btn{margin-left:auto}
+.note{font-size:12.5px;color:var(--ui2);background:#f1efe9;padding:10px 12px;line-height:1.45}
+
+/* ---------- stage ---------- */
+.stagebar{display:flex;align-items:center;gap:8px;padding:10px 16px;font-size:13px;color:var(--ui2)}
+.stagebar .seg{display:flex;border:1px solid var(--line);background:#fff}
+.stagebar .seg button{padding:6px 12px;font-size:13px;font-weight:600;color:var(--ui2)}
+.stagebar .seg button.on{background:var(--ui);color:#fff}
+.stagebar .tip{margin-left:auto}
+#viewport{flex:1;position:relative;overflow:hidden;display:flex;align-items:flex-start;justify-content:center;padding:0 24px 24px}
+#frame{position:relative;background:#fff;box-shadow:0 20px 60px rgba(0,0,0,.18);overflow:hidden;transform-origin:top left}
+#frame.phone{border-radius:34px;border:10px solid #15140f}
+#mockwrap{width:100%;height:100%;overflow:auto;scrollbar-width:thin}
+
+/* ---------- mock site ---------- */
+#mock{--acento:#C2603C;--fondo:#F4EFE6;--texto:#2B2622;--ft:Manrope;--fb:Manrope;--tam:1;background:var(--fondo);color:var(--texto);font-family:var(--fb),sans-serif;font-size:calc(16px*var(--tam));line-height:1.5;min-height:100%}
+#mock h1,#mock h2,#mock h3{font-family:var(--ft),serif;letter-spacing:-.01em;line-height:1.08;font-weight:600}
+#mock .wrap{max-width:1100px;margin:0 auto;padding:0 40px}
+#mock nav{display:flex;align-items:center;gap:28px;padding:22px 0;font-size:.9em}
+#mock nav .lg{font-family:var(--ft);font-weight:700;font-size:1.25em;letter-spacing:.02em;margin-right:auto;display:flex;align-items:center;gap:10px}
+#mock nav .lg img{height:40px;width:auto}
+#mock nav span{opacity:.75}
+#mock .cta{display:inline-block;background:var(--acento);color:#fff;padding:.9em 1.4em;font-weight:600;font-size:.95em;line-height:1}
+#mock .cta.o{background:transparent;color:inherit;border:1px solid currentColor}
+#mock .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding:40px 0 70px}
+#mock .hero .txt{position:relative;z-index:1}
+#mock .hero .meta:empty{display:none}
+#mock .hero .k{color:var(--acento);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:.72em;margin-bottom:18px}
+#mock .hero h1{font-size:3.1em;margin-bottom:22px}
+#mock .hero p{font-size:1.15em;opacity:.85;max-width:30em;margin-bottom:28px}
+#mock .hero .pic{aspect-ratio:4/5;overflow:hidden}
+#mock .hero .pic img{width:100%;height:100%;object-fit:cover}
+#mock .hero .meta{display:flex;gap:28px;margin-top:34px;font-size:.85em;opacity:.8}
+#mock .hero .meta b{display:block;font-size:1.5em;font-family:var(--ft);opacity:1}
+#mock section{padding:64px 0}
+#mock .sec-t{font-size:2em;margin-bottom:12px;max-width:18em}
+#mock .sec-l{opacity:.8;max-width:38em;margin-bottom:36px}
+#mock .serv{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+#mock .serv div{border-top:2px solid var(--acento);padding-top:18px}
+#mock .serv h3{font-size:1.25em;margin-bottom:8px}
+#mock .serv p{opacity:.8;font-size:.95em}
+#mock .who{display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:center;background:color-mix(in srgb,var(--texto) 5%,var(--fondo))}
+#mock .who .pic{aspect-ratio:4/5;overflow:hidden}
+#mock .who .pic img{width:100%;height:100%;object-fit:cover}
+#mock .who p{opacity:.85;white-space:pre-line}
+#mock .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;counter-reset:s}
+#mock .steps div{padding-top:14px;border-top:1px solid color-mix(in srgb,var(--texto) 20%,transparent)}
+#mock .steps div::before{counter-increment:s;content:"0" counter(s);display:block;font-family:var(--ft);font-size:1.6em;color:var(--acento);margin-bottom:8px}
+#mock .steps b{display:block;margin-bottom:4px}
+#mock .contact{background:var(--texto);color:var(--fondo);text-align:center}
+#mock .contact h2{font-size:2.2em;margin-bottom:14px}
+#mock .contact p{opacity:.8;margin-bottom:26px}
+#mock footer{padding:26px 0;font-size:.8em;opacity:.7;display:flex;gap:20px;flex-wrap:wrap}
+#mock footer span:first-child{margin-right:auto}
+/* theme B: dark, centred, photo behind */
+#mock.t-B .hero{display:block;position:relative;padding:0;min-height:620px}
+#mock.t-B .hero .pic{position:absolute;inset:0;aspect-ratio:auto}
+#mock.t-B .hero .pic::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,color-mix(in srgb,var(--fondo) 35%,transparent),color-mix(in srgb,var(--fondo) 88%,transparent))}
+#mock.t-B .hero .txt{position:relative;text-align:center;max-width:760px;margin:0 auto;padding:130px 24px 90px}
+#mock.t-B .hero p{margin-left:auto;margin-right:auto}
+#mock.t-B .hero .meta{justify-content:center}
+#mock.t-B .hero .k{letter-spacing:.4em}
+/* theme C: light, photo card with accent bar */
+#mock.t-C .hero .pic{aspect-ratio:1/1;position:relative}
+#mock.t-C .hero .pic::after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:var(--acento)}
+#mock.t-C .hero .k{background:color-mix(in srgb,var(--acento) 12%,var(--fondo));display:inline-block;padding:.5em .7em;letter-spacing:.08em}
+#mock.t-C .serv div{border-top:0;background:color-mix(in srgb,var(--acento) 7%,var(--fondo));padding:22px}
+/* phone layout for the mock */
+#mock.m .wrap{padding:0 20px}
+#mock.m nav{gap:14px;padding:16px 0}
+#mock.m nav span{display:none}
+#mock.m .hero,#mock.m .who{grid-template-columns:1fr;gap:24px;padding-top:16px}
+#mock.m .hero h1{font-size:2.2em}
+#mock.m .hero .pic{aspect-ratio:4/3;order:-1}
+#mock.m .serv,#mock.m .steps{grid-template-columns:1fr;gap:18px}
+#mock.m section{padding:40px 0}
+#mock.m .sec-t{font-size:1.6em}
+#mock.m.t-B .hero{min-height:520px}
+#mock.m.t-B .hero .pic{order:0}
+#mock.m.t-B .hero .txt{padding:90px 10px 60px}
+
+/* ---------- welcome / modal ---------- */
+.modal{position:fixed;inset:0;background:rgba(21,20,15,.55);display:grid;place-items:center;padding:20px;z-index:50}
+.modal .box{background:#fff;max-width:520px;width:100%;padding:28px 26px}
+.modal h1{font-size:24px;letter-spacing:-.02em;margin-bottom:10px}
+.modal p{color:var(--ui2);font-size:14.5px;line-height:1.5;margin-bottom:16px}
+.modal .code{font-family:ui-monospace,Consolas,monospace;font-size:26px;letter-spacing:.08em;background:#f1efe9;padding:12px;text-align:center;margin:10px 0}
+.modal .link{font-size:13px;word-break:break-all;background:#f1efe9;padding:10px;margin-bottom:12px}
+.modal .acts{display:flex;gap:10px;flex-wrap:wrap}
+.hidden{display:none!important}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ui);color:#fff;padding:10px 16px;font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:60}
+#toast.on{opacity:1}
+
+/* ---------- mobile app layout ---------- */
+#mobtoggle{display:none}
+@media (max-width:900px){
+  #app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  #stage{order:-1;height:42vh;border-bottom:1px solid var(--line);transition:height .3s}
+  #stage.big{height:76vh}
+  #viewport{padding:0 14px 14px}
+  #panel{border-right:0}
+  header.top{padding:12px 16px 8px}
+  header.top .brand small{display:none}
+  #steps{padding:8px 16px 0}
+  #form{padding:16px 16px 30px}
+  .nav{padding:10px 16px}
+  #bar{margin:8px 16px 0}
+  .stagebar .seg{display:none}
+  #mobtoggle{display:inline-block;margin-left:auto}
+  .stagebar .tip{display:none}
+  .pals{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div id="welcome" class="modal">
+ <div class="box">
+  <h1>Vuestra web, paso a paso</h1>
+  <p>Esto es un taller para decidir cómo será la web de MAE Nexus. A la izquierda elegís; a la derecha veis cómo queda al momento. Son 6 pasos y unos 20 minutos. Nada técnico: si algo no lo tenéis claro, lo saltáis.</p>
+  <p><b>Lo que veis es un boceto para elegir, no la web final.</b> Las fotos y los textos se pueden cambiar; lo importante es el ambiente.</p>
+  <div class="f"><label for="w-nombre">¿Quién eres?</label><input id="w-nombre" class="in" placeholder="Tu nombre" autocomplete="off"></div>
+  <div class="acts"><button class="btn dark" id="w-start">Empezar</button><button class="btn" id="w-code-btn">Tengo un código</button></div>
+  <div id="w-code" class="f hidden" style="margin-top:14px"><label for="w-code-in">Código que te dimos (por ejemplo MAE-7K3Q)</label><div class="row"><input id="w-code-in" class="in" placeholder="MAE-XXXX" style="text-transform:uppercase"><button class="btn" id="w-code-go">Abrir</button></div></div>
+ </div>
+</div>
+
+<div id="app">
+ <aside id="panel">
+  <header class="top">
+   <div class="brand">MAE Nexus<small>Taller de la web</small></div>
+   <div class="right"><button class="btn sm" id="b-save">Guardar</button><button class="btn sm dark" id="b-send">Enviar</button></div>
+  </header>
+  <div id="steps"></div>
+  <div id="bar"><i></i></div>
+  <div id="form">
+
+   <!-- 1 ESTILO -->
+   <section class="step" data-step="estilo">
+    <h2>1 · El ambiente</h2>
+    <p class="lead">Tres puntos de partida. Elegid el que más se parezca a cómo queréis que os vean; después se ajusta todo.</p>
+    <div class="temas" id="temas"></div>
+    <div class="f" style="margin-top:20px"><label class="lab">¿Qué queremos que sienta alguien en los primeros 3 segundos? Marcad 2.</label>
+     <div class="chips" data-multi="sentir"><button class="chip">Tranquilidad y confianza</button><button class="chip">Cercanía y calidez</button><button class="chip">Lujo y exclusividad</button><button class="chip">Seriedad profesional</button><button class="chip">Alegría y vida mediterránea</button><button class="chip">Que somos de aquí</button></div></div>
+   </section>
+
+   <!-- 2 COLORES -->
+   <section class="step" data-step="colores">
+    <h2>2 · Los colores</h2>
+    <p class="lead">Tocad el cuadrado de color para abrir el selector, o pegad un código si ya tenéis colores de marca. Abajo, familias ya combinadas.</p>
+    <div id="cols"></div>
+    <div class="sl"><span>Más frío</span><input type="range" id="temp" min="-40" max="40" value="0"><span>Más cálido</span></div>
+    <div class="sl"><span>Más suave</span><input type="range" id="sat" min="-50" max="50" value="0"><span>Más vivo</span></div>
+    <div class="f" style="margin-top:16px"><label class="lab">Familias ya combinadas</label><div class="pals" id="pals"></div></div>
+    <div class="f"><label for="colmarca">¿Tenéis ya colores de marca (logo, tarjetas, redes)?</label><div class="hint">Si sabéis los códigos (algo como #1F5F8B), mejor; si no, describidlos.</div><input id="colmarca" class="in" data-r="colmarca" placeholder="Ejemplo: verde oscuro y dorado, o #16302B"></div>
+   </section>
+
+   <!-- 3 LETRAS -->
+   <section class="step" data-step="letras">
+    <h2>3 · Las letras</h2>
+    <p class="lead">La letra de los títulos marca el carácter; la del texto tiene que leerse bien en el móvil.</p>
+    <div class="f"><label class="lab">Letra de los títulos</label><div class="fonts" id="ft"></div></div>
+    <div class="f"><label class="lab">Letra del texto</label><div class="fonts" id="fb"></div></div>
+    <div class="sl"><span>Más pequeña</span><input type="range" id="tam" min="85" max="120" value="100"><span>Más grande</span></div>
+   </section>
+
+   <!-- 4 TEXTOS -->
+   <section class="step" data-step="textos">
+    <h2>4 · Lo que dice</h2>
+    <p class="lead">Escribid con vuestras palabras: en la vista previa veréis cómo queda. Los textos finales los pulimos juntos y se traducen a los idiomas que elijáis.</p>
+    <div class="f"><label for="t-eslogan">La frase grande de la portada</label><div class="hint">Ideas para empezar; tocad una y cambiadla a vuestro gusto.</div>
+     <div class="chips" id="eslogans" style="margin-bottom:8px"></div>
+     <textarea id="t-eslogan" class="in" data-t="eslogan" rows="2"></textarea></div>
+    <div class="f"><label for="t-sub">La frase de debajo</label><textarea id="t-sub" class="in" data-t="sub" rows="2"></textarea></div>
+    <div class="f"><label for="t-boton">El botón</label><input id="t-boton" class="in" data-t="boton"></div>
+    <div class="f"><label class="lab">Tres cosas que hacéis (título y una línea)</label>
+     <div class="row"><input class="in" data-t="s1t" placeholder="Antes de comprar"><input class="in" data-t="s1d" placeholder="Qué incluye"></div>
+     <div class="row" style="margin-top:8px"><input class="in" data-t="s2t"><input class="in" data-t="s2d"></div>
+     <div class="row" style="margin-top:8px"><input class="in" data-t="s3t"><input class="in" data-t="s3d"></div></div>
+    <div class="f"><label class="lab">Tres datos que den confianza, debajo de la portada</label><div class="hint">Son ejemplos: poned los vuestros (primero la cifra, luego qué es) o dejadlos vacíos.</div>
+     <div class="row" style="grid-template-columns:1fr 1fr 1fr"><input class="in" data-t="m1" placeholder="12 años aquí"><input class="in" data-t="m2" placeholder="9 nacionalidades"><input class="in" data-t="m3" placeholder="1.ª charla gratis"></div></div>
+    <div class="f"><label for="t-quienes">Quiénes sois, en tres o cuatro frases</label><div class="hint">Como lo contaríais en una cena. Ejemplo: «Somos X y Y. Llevamos 12 años ayudando a familias de fuera a comprar casa aquí…»</div><textarea id="t-quienes" class="in" data-t="quienes" rows="4"></textarea></div>
+    <div class="f"><label class="lab">Cómo funciona, en cuatro pasos</label>
+     <input class="in" data-t="p1" style="margin-bottom:8px"><input class="in" data-t="p2" style="margin-bottom:8px"><input class="in" data-t="p3" style="margin-bottom:8px"><input class="in" data-t="p4"></div>
+    <div class="f"><label for="t-contacto">La invitación final</label><input id="t-contacto" class="in" data-t="contacto"></div>
+   </section>
+
+   <!-- 5 LOGO Y FOTOS -->
+   <section class="step" data-step="fotos">
+    <h2>5 · Logo, fotos y enlaces</h2>
+    <p class="lead">Si tenéis logo, subidlo y lo veréis arriba en la web. Elegid la foto de portada entre las vuestras o subid otras.</p>
+    <div class="f"><label class="lab">Logo</label>
+     <div class="logo-box"><img id="logo-prev" alt="" class="hidden"><span id="logo-txt" style="font-size:13.5px;color:var(--ui2)">Sin logo todavía: se verá el nombre en letras.</span><label class="btn sm" for="logo-in">Subir logo</label><input type="file" id="logo-in" accept="image/*" class="sr"><button class="btn sm hidden" id="logo-del">Quitar</button></div>
+     <div class="hint" style="margin-top:8px">Vale una foto del logo o el archivo que os dieran (PNG, JPG, SVG).</div></div>
+    <div class="f"><label class="lab">Foto de portada</label><div class="thumbs" id="thumbs"></div><input type="file" id="foto-in" accept="image/*" multiple class="sr">
+     <div class="hint" style="margin-top:8px">Las tres primeras son de vuestros vídeos. Subid fotos vuestras con clientes, de visitas o de la zona: también sirven para el resto de la web.</div></div>
+    <div class="f"><label class="lab">¿Qué debería verse en la portada?</label><div class="chips" data-one="portada"><button class="chip">Nosotras dos</button><button class="chip">Un momento con un cliente</button><button class="chip">Un paisaje de la Costa del Sol</button><button class="chip">Una casa bonita</button><button class="chip">Proponed vosotros</button></div></div>
+    <div class="f"><label for="r-redes">Dónde tenéis contenido (redes, carpetas, la landing)</label><div class="hint">Pegad los enlaces o los nombres de usuario. De ahí sacamos fotos, vídeos y frases vuestras.</div><textarea id="r-redes" class="in" data-r="redes" rows="3" placeholder="Instagram: @…  Facebook: …  Drive: …"></textarea></div>
+    <div class="f"><label class="lab">Fotos y vídeos: ¿qué podemos usar?</label><div class="checks" data-multi="usar"><label><input type="checkbox" value="landing">Los vídeos y fotos de la landing de Aura</label><label><input type="checkbox" value="redes">Lo que hay en nuestras redes</label><label><input type="checkbox" value="mas">Tenemos más fotos: con clientes, en visitas, de la zona</label><label><input type="checkbox" value="sesion">Haríamos una sesión de fotos nueva si hace falta</label><label><input type="checkbox" value="poco">Preferimos no salir mucho</label></div></div>
+   </section>
+
+   <!-- 6 SOBRE VOSOTRAS -->
+   <section class="step" data-step="vosotras">
+    <h2>6 · Para conoceros mejor</h2>
+    <p class="lead">Lo que no se ve en la vista previa pero decide la web. Respuestas cortas, como se lo contaríais a un cliente.</p>
+    <div class="f"><label for="r-porque">¿Por qué montasteis MAE Nexus en vez de seguir como comerciales de toda la vida? ¿Qué os cansó de lo normal?</label><textarea id="r-porque" class="in" data-r="porque" rows="3"></textarea></div>
+    <div class="f"><label for="r-nombre">¿Qué significa MAE Nexus y por qué ese nombre?</label><input id="r-nombre" class="in" data-r="nombre"></div>
+    <div class="f"><label for="r-camino">El camino completo de un cliente con vosotras, paso a paso: del primer mensaje a las llaves.</label><div class="hint">Como un diario: «1. Nos escribe por Instagram. 2. Videollamada. 3. Viene un fin de semana: lo recogemos en el aeropuerto…». Cuanto más detalle, mejor.</div><textarea id="r-camino" class="in" data-r="camino" rows="5"></textarea></div>
+    <div class="f"><label class="lab">De estas cosas, ¿cuáles hacéis de verdad con los clientes?</label><div class="checks" data-multi="hacemos"><label><input type="checkbox" value="aeropuerto">Recogerlos en el aeropuerto</label><label><input type="checkbox" value="comer">Llevarlos a comer o de tapas</label><label><input type="checkbox" value="zona">Enseñarles la zona: playas, colegios, hospitales</label><label><input type="checkbox" value="banco">Ayudarles con el banco y la hipoteca</label><label><input type="checkbox" value="nie">NIE, cuenta bancaria y papeleo</label><label><input type="checkbox" value="abogado">Recomendarles abogado y gestor</label><label><input type="checkbox" value="notaria">Acompañarlos a la notaría</label><label><input type="checkbox" value="reformas">Reformas, muebles o decoración</label><label><input type="checkbox" value="altas">Dar de alta luz, agua e internet</label><label><input type="checkbox" value="alquilar">Alquilar la casa cuando no están</label><label><input type="checkbox" value="averias">Resolver averías cuando están fuera</label><label><input type="checkbox" value="recibos">Pagar recibos y vigilar la casa</label></div></div>
+    <div class="f"><label for="r-gratis">¿Qué le cuesta al cliente todo eso? Qué es gratis, desde cuándo hasta cuándo, y dónde empieza lo que se paga.</label><div class="hint">Ejemplo: «Todo hasta que tienes las llaves no te cuesta nada: nos paga el vendedor. Si después quieres que cuidemos la casa o la alquilemos, eso tiene una tarifa mensual».</div><textarea id="r-gratis" class="in" data-r="gratis" rows="3"></textarea></div>
+    <div class="f"><label class="lab">El servicio de después de la compra: ¿cómo aparece en la web?</label><div class="chips" data-one="postventa"><button class="chip">Con su propia sección</button><button class="chip">Mencionado, sin precios</button><button class="chip">Con precios «desde»</button><button class="chip">Mejor no ponerlo</button></div></div>
+    <div class="f"><label class="lab">¿De dónde son la mayoría de vuestros clientes?</label><div class="chips" data-multi="paises"><button class="chip">Países Bajos</button><button class="chip">Bélgica</button><button class="chip">Reino Unido</button><button class="chip">Alemania</button><button class="chip">Francia</button><button class="chip">Países nórdicos</button><button class="chip">Estados Unidos</button><button class="chip">España</button></div></div>
+    <div class="f"><label class="lab">¿Qué les preocupa antes de comprar aquí?</label><div class="chips" data-multi="miedos"><button class="chip">Que les engañen con el precio</button><button class="chip">El papeleo y los impuestos</button><button class="chip">No hablar español</button><button class="chip">Comprar sin conocer la zona</button><button class="chip">Qué pasa con la casa cuando no están</button><button class="chip">La hipoteca desde fuera</button><button class="chip">Viajar una y otra vez</button></div></div>
+    <div class="f"><label for="r-frase">¿Qué frase os dicen más los clientes al final?</label><input id="r-frase" class="in" data-r="frase" placeholder="«Ojalá os hubiéramos conocido antes»"></div>
+    <div class="f"><label for="r-cifras">Cifras y nombres que den confianza y se puedan decir</label><div class="hint">Años, casas, familias, nacionalidades; promotoras, abogados, bancos con los que trabajáis.</div><input id="r-cifras" class="in" data-r="cifras"></div>
+    <div class="f"><label class="lab">Idiomas de la web al principio</label><div class="hint">Cada idioma es un trabajo aparte: traducir todo, revisarlo con un nativo y mantenerlo. Lo normal es empezar con uno o dos. Nuestra sugerencia: inglés y neerlandés.</div><div class="chips" data-multi="idiomas"><button class="chip">Inglés</button><button class="chip">Neerlandés</button><button class="chip">Alemán</button><button class="chip">Francés</button><button class="chip">Español</button></div></div>
+    <div class="f"><label class="lab">¿Cómo preferís que os contacten desde la web?</label><div class="chips" data-multi="contacto"><button class="chip">WhatsApp</button><button class="chip">Llamada</button><button class="chip">Correo</button><button class="chip">Formulario corto</button><button class="chip">Videollamada con cita</button></div></div>
+    <div class="f"><label for="r-dominio">Dominio y correo que usáis (si los tenéis) y teléfono o WhatsApp que saldrá en la web</label><input id="r-dominio" class="in" data-r="dominio" placeholder="maenexus.com · hola@… · +34 …"></div>
+    <div class="f"><label class="lab">¿Qué NO queréis que salga?</label><div class="chips" data-multi="no"><button class="chip">Pisos con precios</button><button class="chip">Mucho texto</button><button class="chip">Fotos de banco</button><button class="chip">Colores chillones</button><button class="chip">Formularios largos</button><button class="chip">Vídeos que arrancan solos</button></div></div>
+    <div class="f"><label class="lab">¿Para cuándo os gustaría tenerla?</label><div class="chips" data-one="plazo"><button class="chip">En 2 semanas</button><button class="chip">En un mes</button><button class="chip">En 2 meses</button><button class="chip">Sin prisa, mejor bien</button></div></div>
+    <div class="f"><label for="r-mas">Lo único que no puede faltar, y cualquier otra cosa que debamos saber</label><textarea id="r-mas" class="in" data-r="mas" rows="3"></textarea></div>
+    <div class="note">Al terminar, pulsad <b>Enviar</b> arriba: se guarda todo y se abre WhatsApp con vuestro código para mandarlo al grupo. Podréis volver a abrirlo con ese código desde cualquier móvil y seguir cambiando cosas.</div>
+   </section>
+
+  </div>
+  <div class="nav"><button class="btn" id="prev">Anterior</button><button class="btn dark" id="next">Siguiente</button></div>
+ </aside>
+
+ <main id="stage">
+  <div class="stagebar"><span>Vista previa</span>
+   <div class="seg"><button class="on" data-dev="desk">Ordenador</button><button data-dev="phone">Móvil</button></div>
+   <button class="btn sm" id="mobtoggle">Ampliar</button>
+   <span class="tip">Es un boceto para elegir, no la web final</span></div>
+  <div id="viewport"><div id="frame"><div id="mockwrap">
+   <div id="mock" class="t-A">
+    <div class="wrap">
+     <nav><div class="lg"><img id="m-logo" alt="" class="hidden"><span id="m-brand">MAE NEXUS</span></div><span>Quiénes somos</span><span>Qué hacemos</span><span>Cómo funciona</span><a class="cta o" id="m-navcta">Hablemos</a></nav>
+     <div class="hero">
+      <div class="txt"><div class="k">Costa del Sol · Fuengirola, Benalmádena, Mijas</div><h1 id="m-eslogan"></h1><p id="m-sub"></p><a class="cta" id="m-boton"></a>
+       <div class="meta" id="m-meta"></div></div>
+      <div class="pic"><img id="m-hero" alt=""></div>
+     </div>
+    </div>
+    <section><div class="wrap"><h2 class="sec-t">Qué hacemos por ti</h2><p class="sec-l">Todo lo de antes de las llaves no te cuesta nada: nos paga quien vende. Y cuando ya vives aquí, seguimos cerca.</p>
+     <div class="serv"><div><h3 id="m-s1t"></h3><p id="m-s1d"></p></div><div><h3 id="m-s2t"></h3><p id="m-s2d"></p></div><div><h3 id="m-s3t"></h3><p id="m-s3d"></p></div></div></div></section>
+    <section class="who"><div class="wrap" style="display:contents"><div class="pic"><img id="m-who" alt=""></div><div><h2 class="sec-t">Quiénes somos</h2><p id="m-quienes"></p></div></div></section>
+    <section><div class="wrap"><h2 class="sec-t">Cómo funciona</h2><div class="steps"><div><b id="m-p1"></b></div><div><b id="m-p2"></b></div><div><b id="m-p3"></b></div><div><b id="m-p4"></b></div></div></div></section>
+    <section class="contact"><div class="wrap"><h2 id="m-contacto"></h2><p>Respondemos el mismo día, en tu idioma.</p><a class="cta" id="m-boton2"></a></div></section>
+    <div class="wrap"><footer><span>© MAE Nexus · Costa del Sol</span><span>Instagram</span><span>Facebook</span><span>EN · NL · ES</span></footer></div>
+   </div>
+  </div></div></div>
+ </main>
+</div>
+
+<div id="sendbox" class="modal hidden">
+ <div class="box">
+  <h1 id="sb-title">Guardado</h1>
+  <p id="sb-p">Este es vuestro código. Con él podéis volver a abrir el taller desde cualquier móvil u ordenador y seguir donde lo dejasteis.</p>
+  <div class="code" id="sb-code">MAE-····</div>
+  <div class="link" id="sb-link"></div>
+  <div class="acts"><a class="btn dark" id="sb-wa" target="_blank" rel="noopener">Enviar al grupo por WhatsApp</a><button class="btn" id="sb-copy">Copiar enlace</button><button class="btn" id="sb-close">Cerrar</button></div>
+ </div>
+</div>
+<div id="toast"></div>
+
+<script>
+// ---------- configuración ----------
+const BACKEND = ""; // URL del servicio de guardado (Apps Script /exec). Vacío = solo se guarda en este dispositivo y se comparte por enlace.
+const GRUPO_WA = ""; // opcional: número del grupo/persona para abrir WhatsApp directamente
+
+const TEMAS = {
+ A:{n:"Cercana y cálida",d:"Fotos grandes de vosotras, colores de tierra, letra moderna. Transmite trato de amigas.",c:{acento:"#C2603C",fondo:"#F4EFE6",texto:"#2B2622"},f:{titulo:"Manrope",texto:"Manrope"},foto:"ellas"},
+ B:{n:"Elegante y serena",d:"Fondo oscuro, letra clásica, mucho aire. Transmite calma y nivel.",c:{acento:"#9DB4A0",fondo:"#16302B",texto:"#F2EEE4"},f:{titulo:"Cormorant Garamond",texto:"Manrope"},foto:"costa"},
+ C:{n:"Luminosa y mediterránea",d:"Blanco, azul mar, letra redonda y alegre. Transmite luz y vida.",c:{acento:"#1F5F8B",fondo:"#FFFFFF",texto:"#0B2E4F"},f:{titulo:"Outfit",texto:"Outfit"},foto:"terraza"}
+};
+const PALS=[["Terracota y arena",["#F4EFE6","#C2603C","#2B2622"]],["Verde bosque y marfil",["#16302B","#9DB4A0","#F2EEE4"]],["Azul mar y blanco",["#FFFFFF","#1F5F8B","#0B2E4F"]],["Carbón y tostado",["#1C1B19","#D7B48F","#F5F2EC"]],["Oliva, ladrillo y papel",["#F7F4EE","#B5553A","#2A2A25"]],["Blanco y negro con un toque",["#FAFAF8","#E4572E","#111111"]]];
+const FT=[["Manrope","Moderna limpia"],["Outfit","Redonda y amable"],["Sora","Actual, tecnológica"],["Montserrat","Conocida, segura"],["Josefin Sans","Fina, años 30"],["Cormorant Garamond","Clásica elegante"],["Playfair Display","De revista"],["DM Serif Display","Cálida con carácter"],["Lora","Serena, de lectura"],["Libre Baskerville","Tradicional de confianza"]];
+const FB=[["Manrope","Neutra"],["Rubik","Suave"],["Source Sans 3","Clara"],["DM Sans","Sencilla"],["Work Sans","Seria"],["Outfit","Ligera"]];
+const ESLOGANS=["No te enseñamos pisos. Te enseñamos cómo se vive aquí.","La Costa del Sol como se vive, no como se vende.","Tu casa aquí, con alguien de aquí a tu lado.","Vosotros elegís la vida. Nosotras nos ocupamos del resto.","De la primera visita a las llaves. Y después.","Quien vende trabaja para el vendedor. Nosotras, para ti."];
+const FOTOS_BASE=[["ellas","ellas.webp"],["terraza","terraza.webp"],["sofa","sofa.webp"],["costa","costa.webp"],["atardecer","atardecer.webp"]];
+const STEPS=[["estilo","Ambiente"],["colores","Colores"],["letras","Letras"],["textos","Textos"],["fotos","Logo y fotos"],["vosotras","Vosotras"]];
+
+const DEF=()=>({v:1,quien:"",tema:"A",c:{...TEMAS.A.c},f:{...TEMAS.A.f},tam:100,foto:"ellas",logo:null,fotos:[],
+ t:{eslogan:ESLOGANS[0],sub:"Acompañamos a familias de fuera a comprar casa en la Costa del Sol: la zona, los papeles, el banco, la notaría. Y cuando ya vives aquí, seguimos cerca.",boton:"Hablemos por WhatsApp",
+  s1t:"Antes de comprar",s1d:"Te recogemos, te enseñamos cómo se vive aquí y vemos casas con calma. Sin coste para ti.",
+  s2t:"Durante la compra",s2d:"NIE, banco, abogado, notaría: lo llevamos nosotras y tú entiendes cada paso.",
+  s3t:"Cuando ya vives aquí",s3d:"Averías, recibos, alquilar la casa cuando no estás. Con una tarifa clara.",
+  quienes:"Somos [nombre] y [nombre]. Llevamos años ayudando a familias de Países Bajos, Bélgica, Reino Unido y Alemania a instalarse en la Costa del Sol. No vendemos pisos: acompañamos personas.",
+  m1:"12 años aquí",m2:"9 nacionalidades",m3:"1.ª charla gratis",
+  p1:"Nos escribes y hablamos por videollamada",p2:"Vienes un fin de semana: te recogemos y lo vemos todo",p3:"Elegimos la casa y llevamos los papeles",p4:"Las llaves, y seguimos a tu lado",
+  contacto:"¿Hablamos de tu casa aquí?"},
+ r:{},code:null});
+
+let S=DEF();
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const KEY="mae-taller";
+
+// ---------- utilidades de color ----------
+const hex2hsl=h=>{let r=parseInt(h.slice(1,3),16)/255,g=parseInt(h.slice(3,5),16)/255,b=parseInt(h.slice(5,7),16)/255,M=Math.max(r,g,b),m=Math.min(r,g,b),l=(M+m)/2,s=0,hh=0;if(M!==m){const d=M-m;s=l>.5?d/(2-M-m):d/(M+m);hh=M===r?((g-b)/d+(g<b?6:0)):M===g?((b-r)/d+2):((r-g)/d+4);hh*=60;}return[hh,s*100,l*100];};
+const hsl2hex=(h,s,l)=>{s/=100;l/=100;const k=n=>(n+h/30)%12,a=s*Math.min(l,1-l),f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));return"#"+[f(0),f(8),f(4)].map(x=>Math.round(x*255).toString(16).padStart(2,"0")).join("").toUpperCase();};
+const shift=(hex,dh,ds)=>{let[h,s,l]=hex2hsl(hex);h=(h+dh+360)%360;s=Math.max(0,Math.min(100,s+ds));return hsl2hex(h,s,l);};
+const okhex=v=>/^#[0-9a-f]{6}$/i.test(v);
+
+// ---------- render de la vista previa ----------
+function fotoSrc(id){const b=FOTOS_BASE.find(f=>f[0]===id);if(b)return b[1];const u=S.fotos.find(f=>f.id===id);return u?(u.url||u.data):FOTOS_BASE[0][1];}
+function render(){
+ const m=$("#mock");
+ m.className="t-"+S.tema+(dev==="phone"?" m":"");
+ m.style.setProperty("--acento",S.c.acento);m.style.setProperty("--fondo",S.c.fondo);m.style.setProperty("--texto",S.c.texto);
+ m.style.setProperty("--ft",`"${S.f.titulo}"`);m.style.setProperty("--fb",`"${S.f.texto}"`);m.style.setProperty("--tam",S.tam/100);
+ for(const k in S.t){const el=document.getElementById("m-"+k);if(el)el.textContent=S.t[k];}
+ $("#m-boton2").textContent=S.t.boton;$("#m-navcta").textContent="Hablemos";
+ $("#m-meta").innerHTML=["m1","m2","m3"].map(k=>(S.t[k]||"").trim()).filter(Boolean).map(v=>{const i=v.indexOf(" ");const b=i>0?v.slice(0,i):v,r=i>0?v.slice(i+1):"";return`<span><b>${b}</b>${r}</span>`;}).join("");
+ $("#m-hero").src=fotoSrc(S.foto);
+ const who=S.fotos[0]?(S.fotos[0].url||S.fotos[0].data):(S.foto==="ellas"?"sofa.webp":"ellas.webp");$("#m-who").src=who;
+ const lg=$("#m-logo");if(S.logo){lg.src=S.logo.url||S.logo.data;lg.classList.remove("hidden");$("#m-brand").classList.add("hidden");}else{lg.classList.add("hidden");$("#m-brand").classList.remove("hidden");}
+ fit();
+}
+// ---------- sincronizar mandos con el estado ----------
+function syncUI(){
+ $$("#temas .tema").forEach(b=>b.classList.toggle("on",b.dataset.t===S.tema));
+ ["acento","fondo","texto"].forEach(k=>{$("#c-"+k).value=S.c[k];$("#h-"+k).value=S.c[k];});
+ $$("#pals .pal").forEach((b,i)=>b.classList.toggle("on",PALS[i][1][0].toUpperCase()===S.c.fondo.toUpperCase()&&PALS[i][1][1].toUpperCase()===S.c.acento.toUpperCase()));
+ $$("#ft .fnt").forEach(b=>b.classList.toggle("on",b.dataset.f===S.f.titulo));$$("#fb .fnt").forEach(b=>b.classList.toggle("on",b.dataset.f===S.f.texto));
+ $("#tam").value=S.tam;
+ $$("[data-t]").forEach(i=>{i.value=S.t[i.dataset.t]??"";});
+ $$("[data-r]").forEach(i=>{i.value=S.r[i.dataset.r]??"";});
+ $$(".chips[data-multi],.chips[data-one]").forEach(g=>{const k=g.dataset.multi||g.dataset.one,v=S.r[k]||[];g.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",Array.isArray(v)?v.includes(c.textContent):v===c.textContent));});
+ $$(".checks[data-multi]").forEach(g=>{const v=S.r[g.dataset.multi]||[];g.querySelectorAll("input").forEach(i=>i.checked=v.includes(i.value));});
+ $$("#eslogans .chip").forEach(c=>c.classList.toggle("on",c.textContent===S.t.eslogan));
+ renderThumbs();renderLogo();
+}
+function renderThumbs(){
+ const t=$("#thumbs");t.innerHTML="";
+ const all=[...FOTOS_BASE.map(([id,src])=>({id,src})),...S.fotos.map(f=>({id:f.id,src:f.url||f.data,del:1}))];
+ all.forEach(f=>{const b=document.createElement("button");b.className="th"+(S.foto===f.id?" on":"");b.innerHTML=`<img src="${f.src}" alt="">`+(f.del?`<span class="x" data-del="${f.id}">×</span>`:"");b.dataset.id=f.id;t.appendChild(b);});
+ const add=document.createElement("label");add.className="th add";add.htmlFor="foto-in";add.textContent="+ Subir fotos";t.appendChild(add);
+}
+function renderLogo(){const p=$("#logo-prev");if(S.logo){p.src=S.logo.url||S.logo.data;p.classList.remove("hidden");$("#logo-txt").classList.add("hidden");$("#logo-del").classList.remove("hidden");}else{p.classList.add("hidden");$("#logo-txt").classList.remove("hidden");$("#logo-del").classList.add("hidden");}}
+
+// ---------- construir mandos ----------
+function build(){
+ $("#temas").innerHTML=Object.entries(TEMAS).map(([k,t])=>`<button class="tema" data-t="${k}"><div class="sw"><i style="background:${t.c.fondo}"></i><i style="background:${t.c.acento}"></i></div><div><b>${k} · ${t.n}</b><span>${t.d}</span></div></button>`).join("");
+ $("#cols").innerHTML=[["acento","Color principal","botones, detalles"],["fondo","Fondo","el color de la página"],["texto","Texto","títulos y párrafos"]].map(([k,n,d])=>`<div class="col"><input type="color" id="c-${k}" data-c="${k}"><div class="name">${n}<small>${d}</small></div><input class="in hex" id="h-${k}" data-h="${k}" maxlength="7" spellcheck="false"></div>`).join("");
+ $("#pals").innerHTML=PALS.map(([n,c],i)=>`<button class="pal" data-i="${i}"><div class="s">${c.map(x=>`<i style="background:${x}"></i>`).join("")}</div><small>${n}</small></button>`).join("");
+ $("#ft").innerHTML=FT.map(([f,d])=>`<button class="fnt" data-f="${f}"><b style="font-family:'${f}'">Tu casa en la Costa del Sol</b><small>${d}</small></button>`).join("");
+ $("#fb").innerHTML=FB.map(([f,d])=>`<button class="fnt" data-f="${f}"><b style="font-family:'${f}';font-size:16px;font-weight:400">Nos ocupamos de todo: del aeropuerto a las llaves.</b><small>${d}</small></button>`).join("");
+ $("#eslogans").innerHTML=ESLOGANS.map(e=>`<button class="chip">${e}</button>`).join("");
+ $("#steps").innerHTML=STEPS.map(([k,n],i)=>`<button data-go="${i}">${i+1}. ${n}</button>`).join("");
+}
+
+// ---------- pasos ----------
+let step=0;
+function go(i){step=Math.max(0,Math.min(STEPS.length-1,i));$$(".step").forEach((s,j)=>s.classList.toggle("on",j===step));$$("#steps button").forEach((b,j)=>{b.classList.toggle("on",j===step);b.classList.toggle("done",j<step);});$("#bar i").style.width=((step+1)/STEPS.length*100)+"%";$("#prev").disabled=step===0;$("#next").textContent=step===STEPS.length-1?"Terminar y enviar":"Siguiente";$("#form").scrollTop=0;}
+
+// ---------- vista previa: tamaño ----------
+let dev="desk";
+function fit(){
+ const vp=$("#viewport"),fr=$("#frame");const W=vp.clientWidth-(innerWidth<=900?28:48),H=vp.clientHeight-(innerWidth<=900?14:24);
+ const w=dev==="phone"?410:1200,h=dev==="phone"?860:Math.max(700,Math.round(w*H/W));
+ const s=Math.min(W/w,H/h,1);
+ fr.style.width=w+"px";fr.style.height=h+"px";fr.style.transform=`scale(${s})`;fr.style.marginBottom=(h*s-h)+"px";fr.style.marginRight=(w*s-w)+"px";
+ fr.classList.toggle("phone",dev==="phone");
+}
+addEventListener("resize",()=>{if(innerWidth<=900&&dev!=="phone"){dev="phone";}render();});
+
+// ---------- guardar ----------
+let saveT;
+function persist(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}},300);}
+function change(){persist();render();}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");setTimeout(()=>t.classList.remove("on"),2200);}
+function shareState(){const c={...S};delete c.logo;c.fotos=c.fotos.map(f=>({id:f.id,url:f.url})).filter(f=>f.url);return btoa(unescape(encodeURIComponent(JSON.stringify(c))));}
+function linkFor(){return S.code?location.origin+location.pathname+"?c="+S.code:location.origin+location.pathname+"#s="+shareState();}
+async function saveRemote(){
+ if(!BACKEND)return null;
+ const files=[];if(S.logo&&S.logo.data&&!S.logo.url)files.push({k:"logo",name:"logo."+(S.logo.type.split("/")[1]||"png"),type:S.logo.type,b64:S.logo.data.split(",")[1]});
+ S.fotos.forEach(f=>{if(f.data&&!f.url)files.push({k:f.id,name:f.id+".jpg",type:"image/jpeg",b64:f.data.split(",")[1]});});
+ const body={code:S.code,quien:S.quien,state:(()=>{const c=JSON.parse(JSON.stringify(S));if(c.logo)delete c.logo.data;c.fotos.forEach(f=>delete f.data);return c;})(),files};
+ const r=await fetch(BACKEND,{method:"POST",body:JSON.stringify(body)});const j=await r.json();if(!j.ok)throw new Error(j.error||"error");
+ S.code=j.code;(j.files||[]).forEach(f=>{if(f.k==="logo"&&S.logo)S.logo.url=f.url;else{const x=S.fotos.find(y=>y.id===f.k);if(x)x.url=f.url;}});
+ persist();return j.code;
+}
+async function doSave(send){
+ const b=$("#b-save");b.disabled=true;b.textContent="Guardando…";
+ try{await saveRemote();}catch(e){console.warn(e);toast("No se pudo guardar en la nube; queda guardado en este dispositivo.");}
+ b.disabled=false;b.textContent="Guardar";
+ const link=linkFor();$("#sb-code").textContent=S.code||"Guardado en este dispositivo";$("#sb-code").classList.toggle("hidden",!S.code);$("#sb-link").textContent=link;
+ const msg=`Hola, ya he hecho el taller de la web${S.quien?" ("+S.quien+")":""}.${S.code?" Mi código es "+S.code+".":""} Enlace: ${link}`;
+ $("#sb-wa").href="https://wa.me/"+GRUPO_WA+"?text="+encodeURIComponent(msg);
+ $("#sb-title").textContent=send?"Listo para enviar":"Guardado";
+ $("#sendbox").classList.remove("hidden");
+}
+async function loadRemote(code){const r=await fetch(BACKEND+"?c="+encodeURIComponent(code));const j=await r.json();if(!j.ok)throw new Error("no");return j.state;}
+
+// ---------- imágenes ----------
+function readImage(file,max,asPng){return new Promise(res=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext("2d").drawImage(im,0,0,c.width,c.height);res(asPng?c.toDataURL("image/png"):c.toDataURL("image/jpeg",.86));};im.src=fr.result;};fr.readAsDataURL(file);});}
+
+// ---------- eventos ----------
+function wire(){
+ $("#temas").addEventListener("click",e=>{const b=e.target.closest(".tema");if(!b)return;const t=TEMAS[b.dataset.t];S.tema=b.dataset.t;S.c={...t.c};S.f={...t.f};if(!S.fotos.length)S.foto=t.foto;$("#temp").value=0;$("#sat").value=0;syncUI();change();});
+ $("#cols").addEventListener("input",e=>{const k=e.target.dataset.c||e.target.dataset.h;if(!k)return;let v=e.target.value.trim();if(e.target.dataset.h){if(v&&v[0]!=="#")v="#"+v;if(!okhex(v))return;}S.c[k]=v.toUpperCase();$("#c-"+k).value=S.c[k];$("#h-"+k).value=S.c[k];$$("#pals .pal").forEach(b=>b.classList.remove("on"));change();});
+ let lastT=0,lastS=0;
+ $("#temp").addEventListener("input",e=>{const d=+e.target.value-lastT;lastT=+e.target.value;["acento","fondo","texto"].forEach(k=>S.c[k]=shift(S.c[k],-d*.5,0));syncUI();change();});
+ $("#sat").addEventListener("input",e=>{const d=+e.target.value-lastS;lastS=+e.target.value;S.c.acento=shift(S.c.acento,0,d*.6);S.c.fondo=shift(S.c.fondo,0,d*.15);syncUI();change();});
+ $("#pals").addEventListener("click",e=>{const b=e.target.closest(".pal");if(!b)return;const c=PALS[+b.dataset.i][1];S.c={fondo:c[0],acento:c[1],texto:c[2]};$("#temp").value=lastT=0;$("#sat").value=lastS=0;syncUI();change();});
+ $("#ft").addEventListener("click",e=>{const b=e.target.closest(".fnt");if(!b)return;S.f.titulo=b.dataset.f;syncUI();change();});
+ $("#fb").addEventListener("click",e=>{const b=e.target.closest(".fnt");if(!b)return;S.f.texto=b.dataset.f;syncUI();change();});
+ $("#tam").addEventListener("input",e=>{S.tam=+e.target.value;change();});
+ $$("[data-t]").forEach(i=>i.addEventListener("input",()=>{S.t[i.dataset.t]=i.value;if(i.dataset.t==="eslogan")$$("#eslogans .chip").forEach(c=>c.classList.toggle("on",c.textContent===i.value));change();}));
+ $$("[data-r]").forEach(i=>i.addEventListener("input",()=>{S.r[i.dataset.r]=i.value;persist();}));
+ $("#eslogans").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;S.t.eslogan=c.textContent;syncUI();change();});
+ $$(".chips[data-multi],.chips[data-one]").forEach(g=>g.addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;const k=g.dataset.multi||g.dataset.one;if(g.dataset.one){S.r[k]=S.r[k]===c.textContent?"":c.textContent;}else{const v=new Set(S.r[k]||[]);v.has(c.textContent)?v.delete(c.textContent):v.add(c.textContent);S.r[k]=[...v];}syncUI();persist();}));
+ $$(".checks[data-multi]").forEach(g=>g.addEventListener("change",()=>{S.r[g.dataset.multi]=[...g.querySelectorAll("input:checked")].map(i=>i.value);persist();}));
+ $("#logo-in").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;const png=/png|svg|webp/.test(f.type);S.logo={type:png?"image/png":"image/jpeg",data:await readImage(f,900,png)};e.target.value="";syncUI();change();});
+ $("#logo-del").addEventListener("click",()=>{S.logo=null;syncUI();change();});
+ $("#foto-in").addEventListener("change",async e=>{for(const f of [...e.target.files].slice(0,8)){const id="u"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);S.fotos.push({id,data:await readImage(f,1600)});S.foto=id;}e.target.value="";syncUI();change();});
+ $("#thumbs").addEventListener("click",e=>{const x=e.target.closest("[data-del]");if(x){S.fotos=S.fotos.filter(f=>f.id!==x.dataset.del);if(S.foto===x.dataset.del)S.foto="ellas";syncUI();change();return;}const b=e.target.closest(".th[data-id]");if(!b)return;S.foto=b.dataset.id;syncUI();change();});
+ $("#prev").addEventListener("click",()=>go(step-1));
+ $("#next").addEventListener("click",()=>{if(step===STEPS.length-1)doSave(true);else go(step+1);});
+ $("#steps").addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)go(+b.dataset.go);});
+ $$(".seg button").forEach(b=>b.addEventListener("click",()=>{dev=b.dataset.dev;$$(".seg button").forEach(x=>x.classList.toggle("on",x===b));render();}));
+ $("#mobtoggle").addEventListener("click",()=>{const s=$("#stage");s.classList.toggle("big");$("#mobtoggle").textContent=s.classList.contains("big")?"Reducir":"Ampliar";setTimeout(fit,320);});
+ $("#b-save").addEventListener("click",()=>doSave(false));$("#b-send").addEventListener("click",()=>doSave(true));
+ $("#sb-close").addEventListener("click",()=>$("#sendbox").classList.add("hidden"));
+ $("#sb-copy").addEventListener("click",async()=>{try{await navigator.clipboard.writeText($("#sb-link").textContent);toast("Enlace copiado");}catch(e){toast("No se pudo copiar; selecciónalo y cópialo");}});
+ $("#w-code-btn").addEventListener("click",()=>$("#w-code").classList.toggle("hidden"));
+ $("#w-code-go").addEventListener("click",async()=>{const c=$("#w-code-in").value.trim().toUpperCase();if(!c)return;try{const st=await loadRemote(c);if(st){S=Object.assign(DEF(),st);S.code=c;start();}}catch(e){toast("No encontramos ese código. Revisa las letras.");}});
+ $("#w-start").addEventListener("click",()=>{S.quien=$("#w-nombre").value.trim();start();});
+}
+function start(){$("#welcome").classList.add("hidden");if(innerWidth<=900)dev="phone";syncUI();render();go(0);persist();}
+
+// ---------- arranque ----------
+build();wire();
+(async()=>{
+ const q=new URLSearchParams(location.search),c=q.get("c");
+ if(c&&BACKEND){try{const st=await loadRemote(c);if(st){S=Object.assign(DEF(),st);S.code=c.toUpperCase();$("#w-nombre").value=S.quien||"";toast("Hemos recuperado lo que habíais guardado");}}catch(e){toast("No encontramos ese código");}}
+ else if(location.hash.startsWith("#s=")){try{S=Object.assign(DEF(),JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(3))))));$("#w-nombre").value=S.quien||"";}catch(e){}}
+ else{try{const st=JSON.parse(localStorage.getItem(KEY));if(st&&st.v===1){S=Object.assign(DEF(),st);$("#w-nombre").value=S.quien||"";}}catch(e){}}
+ syncUI();render();
+})();
+</script>
+</body>
+</html>
